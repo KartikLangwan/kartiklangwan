@@ -101,6 +101,47 @@
             background-size:256px
         }
 
+        /* ── Video background layer ───────────────────── */
+        #vidBg{
+            position:fixed; inset:0;
+            z-index: -1;
+            pointer-events:none;
+            background:var(--bg);
+        }
+        .vid{
+            position:absolute; inset:0;
+            width:100%; height:100%;
+            object-fit:cover;
+            opacity:0;
+            transition:opacity .55s var(--ease);
+            filter:saturate(110%) contrast(103%);
+            transform:scale(1.02);
+        }
+        #vidBg .vidDown{ opacity:1; }
+        #vidOverlay{
+            position:absolute; inset:0;
+            background:
+              radial-gradient(1200px 600px at 20% 0%, rgba(var(--acR),.10), transparent 55%),
+              radial-gradient(900px 480px at 95% 10%, rgba(255,255,255,.05), transparent 60%),
+              linear-gradient(to bottom, rgba(5,5,5,.65), rgba(5,5,5,.78) 55%, rgba(5,5,5,.92));
+        }
+        [data-theme="light"] #vidOverlay{
+            background:
+              radial-gradient(1200px 600px at 20% 0%, rgba(var(--acR),.08), transparent 55%),
+              radial-gradient(900px 480px at 95% 10%, rgba(0,0,0,.06), transparent 60%),
+              linear-gradient(to bottom, rgba(245,245,241,.55), rgba(245,245,241,.78) 55%, rgba(245,245,241,.92));
+        }
+
+        @media(hover:none),(pointer:coarse){
+            /* reduce visual intensity on mobile/low power */
+            #vidOverlay{ background:
+              radial-gradient(900px 520px at 10% 0%, rgba(var(--acR),.08), transparent 55%),
+              linear-gradient(to bottom, rgba(5,5,5,.62), rgba(5,5,5,.90));
+            }
+            .vid{ filter:saturate(105%) contrast(100%); }
+        }
+
+
         /* ── Custom cursor ───────────────────────────── */
         #cur   { position:fixed;inset:0 auto auto 0;width:7px;height:7px;background:var(--ac);border-radius:50%;pointer-events:none;z-index:10001;will-change:transform;mix-blend-mode:difference }
         #cring { position:fixed;inset:0 auto auto 0;width:36px;height:36px;border:1.5px solid rgba(var(--acR),.3);border-radius:50%;pointer-events:none;z-index:10000;will-change:transform }
@@ -264,8 +305,29 @@
         .g4>*:nth-last-child(-n+4) { border-bottom:none }
 
         /* ── About card base ─────────────────────────── */
-        .ac { padding:28px 32px;background:var(--card);transition:background .22s var(--ease);will-change:transform }
-        .ac:hover { background:var(--cardh) }
+        /* Transparent dark cards (works with hover/click smoothly) */
+        .ac {
+            padding:28px 32px;
+            background:rgba(15,15,15,.42);
+            backdrop-filter:blur(10px) saturate(120%);
+            -webkit-backdrop-filter:blur(10px) saturate(120%);
+            border:1px solid rgba(255,255,255,.06);
+            transition:background .28s var(--ease), border-color .28s var(--ease), transform .22s var(--ease);
+            will-change:transform;
+        }
+        .ac:hover, .ac:focus-visible {
+            background:rgba(20,20,20,.62);
+            border-color:rgba(var(--acR),.22);
+        }
+        [data-theme="light"] .ac {
+            background:rgba(230,230,226,.58);
+            border-color:rgba(0,0,0,.06);
+        }
+        [data-theme="light"] .ac:hover, [data-theme="light"] .ac:focus-visible {
+            background:rgba(216,216,212,.78);
+            border-color:rgba(58,136,0,.28);
+        }
+
         .albl { font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);margin-bottom:13px;display:flex;align-items:center;gap:6px }
         .albl::before { content:'//';color:var(--ac) }
         .ac h3  { font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:10px }
@@ -277,8 +339,19 @@
         .srr    { font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--t3);letter-spacing:.04em }
 
         /* ── Project card ────────────────────────────── */
-        .pc { padding:24px;background:var(--card);display:flex;flex-direction:column;position:relative;overflow:hidden;transition:background .22s var(--ease);will-change:transform }
-        .pc:hover { background:var(--cardh) }
+        /* Transparent dark project cards */
+        .pc {
+            padding:24px;
+            background:rgba(15,15,15,.36);
+            border:1px solid rgba(255,255,255,.06);
+            backdrop-filter:blur(10px) saturate(120%);
+            -webkit-backdrop-filter:blur(10px) saturate(120%);
+            display:flex;flex-direction:column;position:relative;overflow:hidden;
+            transition:background .28s var(--ease), border-color .28s var(--ease), transform .22s var(--ease);
+            will-change:transform;
+        }
+        .pc:hover, .pc:focus-visible { background:rgba(20,20,20,.62); border-color:rgba(var(--acR),.22) }
+
         .pc::after { content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--ac),transparent);opacity:0;transform:scaleX(.3);transform-origin:center;transition:opacity .4s var(--ease),transform .4s var(--ease) }
         .pc:hover::after { opacity:1;transform:scaleX(1) }
         .pc.feat { grid-column:span 2;background:linear-gradient(140deg,rgba(var(--acR),.04),var(--card)) }
@@ -320,16 +393,55 @@
         .pac     { height:16px;border-radius:2px;background:rgba(var(--acR),.16);width:55%;margin-top:4px }
 
         /* ── Tips card ───────────────────────────────── */
-        .tic { padding:28px 32px;background:var(--card);transition:background .22s var(--ease);will-change:transform }
-        .tic:hover { background:var(--cardh) }
+        .tic {
+            padding:28px 32px;
+            background:rgba(15,15,15,.38);
+            border:1px solid rgba(255,255,255,.06);
+            backdrop-filter:blur(10px) saturate(120%);
+            -webkit-backdrop-filter:blur(10px) saturate(120%);
+            transition:background .28s var(--ease), border-color .28s var(--ease), transform .22s var(--ease);
+            will-change:transform;
+        }
+        .tic:hover, .tic:focus-visible {
+            background:rgba(20,20,20,.62);
+            border-color:rgba(var(--acR),.22);
+        }
+        [data-theme="light"] .tic {
+            background:rgba(230,230,226,.56);
+            border-color:rgba(0,0,0,.06);
+        }
+        [data-theme="light"] .tic:hover, [data-theme="light"] .tic:focus-visible {
+            background:rgba(216,216,212,.78);
+            border-color:rgba(58,136,0,.28);
+        }
+
         .tin { font-family:'Archivo Black',sans-serif;font-size:2.8rem;line-height:1;color:var(--b3);margin-bottom:14px;letter-spacing:-.04em;transition:color .32s var(--ease) }
         .tic:hover .tin { color:rgba(var(--acR),.2) }
         .tic h3 { font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;margin-bottom:7px }
         .tic p  { font-size:.79rem;color:var(--t2);line-height:1.74;font-weight:300 }
 
         /* ── Contact card ────────────────────────────── */
-        .cc { padding:36px 42px;background:var(--card);transition:background .22s var(--ease) }
-        .cc:hover { background:var(--cardh) }
+        .cc {
+            padding:36px 42px;
+            background:rgba(15,15,15,.34);
+            border:1px solid rgba(255,255,255,.06);
+            backdrop-filter:blur(10px) saturate(120%);
+            -webkit-backdrop-filter:blur(10px) saturate(120%);
+            transition:background .28s var(--ease), border-color .28s var(--ease);
+        }
+        .cc:hover, .cc:focus-visible {
+            background:rgba(20,20,20,.60);
+            border-color:rgba(var(--acR),.22);
+        }
+        [data-theme="light"] .cc {
+            background:rgba(230,230,226,.56);
+            border-color:rgba(0,0,0,.06);
+        }
+        [data-theme="light"] .cc:hover, [data-theme="light"] .cc:focus-visible {
+            background:rgba(216,216,212,.78);
+            border-color:rgba(58,136,0,.28);
+        }
+
         .cch { font-family:'Syne',sans-serif;font-size:.94rem;font-weight:700;margin-bottom:20px;color:var(--t2);display:flex;align-items:center;gap:7px }
         .cch::before { content:'//';color:var(--ac);font-family:'JetBrains Mono',monospace;font-size:.68rem }
         .clist { display:grid;gap:10px }
@@ -351,8 +463,28 @@
         }
         .crow:hover .cact { border-color:rgba(var(--acR),.45);color:var(--ac);background:rgba(var(--acR),.04) }
         .cfits  { display:grid;gap:10px }
-        .cfi    { padding:18px 20px;border-radius:var(--r);border:1px solid var(--b1);background:var(--surf);transition:border-color .22s,background .22s }
-        .cfi:hover { border-color:var(--b2);background:var(--card) }
+        .cfi {
+            padding:18px 20px;
+            border-radius:var(--r);
+            border:1px solid rgba(255,255,255,.08);
+            background:rgba(13,13,13,.28);
+            backdrop-filter:blur(10px) saturate(120%);
+            -webkit-backdrop-filter:blur(10px) saturate(120%);
+            transition:border-color .28s var(--ease), background .28s var(--ease), transform .22s var(--ease);
+        }
+        .cfi:hover, .cfi:focus-visible {
+            border-color:rgba(var(--acR),.30);
+            background:rgba(20,20,20,.60);
+        }
+        [data-theme="light"] .cfi {
+            border-color:rgba(0,0,0,.08);
+            background:rgba(230,230,226,.50);
+        }
+        [data-theme="light"] .cfi:hover, [data-theme="light"] .cfi:focus-visible {
+            border-color:rgba(58,136,0,.30);
+            background:rgba(216,216,212,.78);
+        }
+
         .cfi strong { display:flex;align-items:center;gap:7px;font-size:.9rem;margin-bottom:6px }
         .cfi strong::before { content:'';width:4px;height:4px;border-radius:50%;background:var(--ac);flex-shrink:0 }
         .cfi p  { font-size:.8rem;color:var(--t2);line-height:1.68;padding-left:11px;font-weight:300 }
@@ -586,6 +718,13 @@
     <a href="#tips">Advice <span>03</span></a>
     <a href="#contact">Contact <span>04</span></a>
 </div>
+
+<!-- ─── Video Background (single video, site-wide) ──────────────── -->
+<div id="vidBg" aria-hidden="true">
+    <video id="vidDown" class="vid vidDown" muted playsinline loop autoplay preload="auto" src="down.mp4" type="video/mp4"></video>
+    <div id="vidOverlay"></div>
+</div>
+
 
 <main id="home">
     <!-- ─── Hero ─────────────────────────────────────── -->
@@ -1109,6 +1248,26 @@
             setTimeout(() => { cpBtn.textContent = 'copy id'; }, 1600);
         }
     });
+
+    /* ── Section-controlled background video ───────────── */
+    (function initVideoBg(){
+        const bg = document.getElementById('vidBg');
+        const vDown = document.getElementById('vidDown');
+        if (!bg || !vDown) return;
+
+        const safePlay = async (v) => {
+            try {
+                v.muted = true;
+                v.playsInline = true;
+                v.currentTime = 0;
+                await v.play();
+            } catch { /* autoplay can fail; ignore */ }
+        };
+
+        // Single site-wide background video
+        safePlay(vDown);
+    })();
 </script>
 </body>
 </html>
+
